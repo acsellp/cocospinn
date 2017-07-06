@@ -1,1 +1,1 @@
-Replace yourproject/Classes with this one
+Replace yourproject/Classes  and yourproject/Resources with this one
