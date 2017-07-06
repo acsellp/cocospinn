@@ -92,7 +92,10 @@ void Spinner::TouchEnded (Touch* touch, Event* event)
 	EaseOut *actionOut = EaseOut::create(rotateBy, 2.0f);
 	actionOut->ActionInterval::initWithDuration(1.0f);
 	//sprite->runAction(actionOut);
-	auto sequ = Sequence::create(actionIn, actionOut, NULL);
+	//if (!sequ->isDone())
+	
+	sequ = Sequence::create(actionIn, actionOut, NULL);
+	sequ->ActionInterval::initWithDuration(5.0f);
 	sprite->runAction(sequ);
 }
 

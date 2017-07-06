@@ -21,6 +21,7 @@ private:
 	cocos2d::Sprite* sprite;
 	cocos2d::Point first;
 	cocos2d::Point last;
+	cocos2d::Sequence *sequ;
 	float originx;
 	float originy;
 	float speed;
