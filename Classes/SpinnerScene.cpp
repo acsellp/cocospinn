@@ -23,7 +23,8 @@ bool Spinner::init()
     }
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
-
+	originy = visibleSize.height / 2;
+	originx = visibleSize.width / 2;
 	auto BG = Sprite::create("Background.jpg");
 	BG->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	this->addChild(BG, -1);
@@ -38,7 +39,6 @@ bool Spinner::init()
 	str = TEXT("Scene STARTED!!\n");
 	WriteConsole(console, str, wcslen(str), &(DWORD)cw, NULL);
 #endif
-	//Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(mouseListener, sprite);
 	auto touchListener = EventListenerTouchOneByOne::create();
     touchListener->onTouchBegan = CC_CALLBACK_2(Spinner::TouchBegan, this);	
     touchListener->onTouchMoved = CC_CALLBACK_2(Spinner::TouchMoved, this);
@@ -52,27 +52,15 @@ bool Spinner::init()
 
 bool Spinner::TouchBegan (Touch* touch, Event* event) 
 {
-	Point p = Director::getInstance()->convertToGL(touch->getLocationInView());
-#ifdef WIN32
-	_snprintf_s(buf , 300, "touch began ... x = %f y = %f\n\n", p.x, p.y);
-	size_t newsize = strlen(buf) + 1;
-	size_t convertedChars = 0;
-	wchar_t * wcstring = new wchar_t[newsize];
-	mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-	WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
-	free(wcstring);
-#elif
-	CCLOG("touch began  ... x = %f y = %f\n\n", p.x, p.y);
-#endif
+	first = Director::getInstance()->convertToGL(touch->getLocationInView());
 	return true; // if you are consuming it
 }
 
 void Spinner::TouchMoved (Touch* touch, Event* event) 
 {
-	auto rotateBy = RotateBy::create(2, 360.0f);
-	sprite->runAction(rotateBy);
+	Point p = Director::getInstance()->convertToGL(touch->getLocationInView());
 #ifdef WIN32
-	_snprintf_s(buf, 300, "touch move  ... x = %f y = %f\n\n", touch->getLocationInView().x, touch->getLocationInView().y);
+	_snprintf_s(buf, 300, "Touch move  %f,%f\n", p.x, p.y);
 	size_t newsize = strlen(buf) + 1;
 	size_t convertedChars = 0;
 	wchar_t * wcstring = new wchar_t[newsize];
@@ -80,40 +68,49 @@ void Spinner::TouchMoved (Touch* touch, Event* event)
 	WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
 	free(wcstring);
 #elif
-	CCLOG("touch moved  ... x = %f y = %f\n\n", touch->getLocationInView().x, touch->getLocationInView().y);
+	CCLOG("Touch move  %f,%f\n", touch->getLocationInView().x, touch->getLocationInView().y);
 #endif
-
 }
 
 void Spinner::TouchEnded (Touch* touch, Event* event) 
 {
-
-#ifdef WIN32
-	_snprintf_s(buf, 300, "touch ended  ... x = %f y = %f\n\n", touch->getLocationInView().x, touch->getLocationInView().y);
-	size_t newsize = strlen(buf) + 1;
-	size_t convertedChars = 0;
-	wchar_t * wcstring = new wchar_t[newsize];
-	mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-	WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
-	free(wcstring);
-#elif
-	CCLOG("touch ended  ... x = %f y = %f\n\n", touch->getLocationInView().x, touch->getLocationInView().y);
-#endif
-
+	last = Director::getInstance()->convertToGL(touch->getLocationInView());
+	setSpeed();
+	if (speed > MAX_SPEED)
+		speed = MAX_SPEED;
+	else if (speed < MIN_SPEED)
+		speed = MIN_SPEED;
+	float nRot = MIN_SPEED / speed;
+	float aRot = 580 * speed / MIN_SPEED;
+	auto rotateBy = RotateBy::create(nRot, aRot);
+	sprite->runAction(rotateBy);
 }
 
 void Spinner::TouchCancelled(Touch* touch, Event* event)
 {
+	
+}
 
+void Spinner::setSpeed()
+{
+	if ((first.y > last.y && last.x > originx) \
+		|| (first.x > last.x && last.y < originy) \
+		|| (first.y < last.y && last.x < originx) \
+		|| (first.x < last.x && last.y > originy ))
+	{
+		speed = (first.y - last.y) + (first.x - last.x);
+		if (speed < 0)
+			speed *= -1;
 #ifdef WIN32
-	_snprintf_s(buf, 300, "touch cancelled  ... x = %f y = %f\n\n", touch->getDelta().x, touch->getDelta().y);
-	size_t newsize = strlen(buf) + 1;
-	size_t convertedChars = 0;
-	wchar_t * wcstring = new wchar_t[newsize];
-	mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-	WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
-	free(wcstring);
+		_snprintf_s(buf, 300, "\nBegin: %f,%f\nEnd: %f,%f\nOrigin: %f,%f\nSpeed: %f\n", first.x, first.y, last.x, last.y, originx, originy, speed);
+		size_t newsize = strlen(buf) + 1;
+		size_t convertedChars = 0;
+		wchar_t* wcstring = new wchar_t[newsize];
+		mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
+		WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
+		free(wcstring);
 #elif
-	CCLOG("touch canceled  ... x = %f y = %f\n\n", touch->getLocationInView().x, touch->getLocationInView().y);
+		CCLOG("Begin: %f,%f\nEnd: %f,%f\n\n", firstX, firstY, lastX, lastY);
 #endif
+	}
 }
