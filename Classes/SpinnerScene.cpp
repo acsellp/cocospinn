@@ -36,8 +36,10 @@ bool Spinner::init()
 	sprite->runAction(scaleTo);
 	this->addChild(sprite, 0);
 #ifdef WIN32
-	str = TEXT("Scene STARTED!!\n");
+	str = TEXT("Scene Started\n");
 	WriteConsole(console, str, wcslen(str), &(DWORD)cw, NULL);
+#elif
+	CCLOG("Scene Started\n");
 #endif
 	auto touchListener = EventListenerTouchOneByOne::create();
     touchListener->onTouchBegan = CC_CALLBACK_2(Spinner::TouchBegan, this);	
@@ -53,7 +55,7 @@ bool Spinner::init()
 bool Spinner::TouchBegan (Touch* touch, Event* event) 
 {
 	first = Director::getInstance()->convertToGL(touch->getLocationInView());
-	return true; // if you are consuming it
+	return true;
 }
 
 void Spinner::TouchMoved (Touch* touch, Event* event) 
@@ -68,7 +70,7 @@ void Spinner::TouchMoved (Touch* touch, Event* event)
 	WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
 	free(wcstring);
 #elif
-	CCLOG("Touch move  %f,%f\n", touch->getLocationInView().x, touch->getLocationInView().y);
+	CCLOG("Touch move  %f,%f\n", p.x, p.y);
 #endif
 }
 
