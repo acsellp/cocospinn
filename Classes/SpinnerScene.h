@@ -11,7 +11,7 @@ class Spinner : public cocos2d::Scene
 public:
     static cocos2d::Scene* createScene(HANDLE console);
     virtual bool init();
-	void setSpeed(void);
+	void setSpeedAndDir(void);
     CREATE_FUNC(Spinner);
     bool TouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
     void TouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -25,6 +25,9 @@ private:
 	float originx;
 	float originy;
 	float speed;
+	bool forward;
+	uint32_t score;
+
 	char buf[300];
 };
 

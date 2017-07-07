@@ -21,6 +21,8 @@ bool Spinner::init()
     {
         return false;
     }
+	score = 0;
+	speed = 0;
     auto visibleSize = Director::getInstance()->getVisibleSize();
     Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	originy = visibleSize.height / 2;
@@ -77,28 +79,32 @@ void Spinner::TouchMoved (Touch* touch, Event* event)
 void Spinner::TouchEnded (Touch* touch, Event* event) 
 {
 	last = Director::getInstance()->convertToGL(touch->getLocationInView());
-	setSpeed();
-	if (speed > MAX_SPEED)
-		speed = MAX_SPEED;
-	else if (speed < MIN_SPEED)
-		speed = MIN_SPEED;
-	float nRot = MIN_SPEED / speed;
-	float aRot = 580 * speed / MIN_SPEED;
+	setSpeedAndDir();
+	if (forward)
+	{
+		if (speed > MAX_SPEED)
+			speed = MAX_SPEED;
+		else if (speed < MIN_SPEED)
+			speed = MIN_SPEED;
+		float nRot = MIN_SPEED / speed;
+		float aRot = 580 * speed / MIN_SPEED;
 
-	auto rotateBy = RotateBy::create(nRot, aRot);
-	//rotateBy->setDuration(3.0f);
-	//rotateBy->ActionInterval::initWithDuration(3.0f);
-	EaseIn  *actionIn = EaseIn::create(rotateBy, 2.0f);
-	actionIn->ActionInterval::initWithDuration(1.0f);
-	//sprite->runAction(actionIn);
-	EaseOut *actionOut = EaseOut::create(rotateBy, 2.0f);
-	actionOut->ActionInterval::initWithDuration(1.0f);
-	//sprite->runAction(actionOut);
-	//if (!sequ->isDone())
-	
-	sequ = Sequence::create(actionIn, actionOut, NULL);
-	sequ->ActionInterval::initWithDuration(5.0f);
-	sprite->runAction(sequ);
+		auto rotateBy = RotateBy::create(nRot, aRot);
+		//rotateBy->setDuration(3.0f);
+		//rotateBy->ActionInterval::initWithDuration(3.0f);
+		EaseIn  *actionIn = EaseIn::create(rotateBy, 2.0f);
+		actionIn->ActionInterval::initWithDuration(1.0f);
+		//sprite->runAction(actionIn);
+		EaseOut *actionOut = EaseOut::create(rotateBy, 2.0f);
+		actionOut->ActionInterval::initWithDuration(1.0f);
+
+		sequ = Sequence::create(actionIn, actionOut, NULL);
+		sequ->ActionInterval::initWithDuration(5.0f);
+		score += aRot;
+		//if (score > LVL1)
+		//	Spinner::runlvl2();
+		sprite->runAction(sequ);
+	}
 }
 
 void Spinner::TouchCancelled(Touch* touch, Event* event)
@@ -106,7 +112,7 @@ void Spinner::TouchCancelled(Touch* touch, Event* event)
 	
 }
 
-void Spinner::setSpeed()
+void Spinner::setSpeedAndDir()
 {
 	if ((first.y > last.y && last.x > originx) \
 		|| (first.x > last.x && last.y < originy) \
@@ -116,8 +122,9 @@ void Spinner::setSpeed()
 		speed = (first.y - last.y) + (first.x - last.x);
 		if (speed < 0)
 			speed *= -1;
+		forward = true;
 #ifdef WIN32
-		_snprintf_s(buf, 300, "\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\n", first.x, first.y, last.x, last.y, originx, originy, speed);
+		_snprintf_s(buf, 300, "\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\n\n", first.x, first.y, last.x, last.y, originx, originy, speed, score);
 		size_t newsize = strlen(buf) + 1;
 		size_t convertedChars = 0;
 		wchar_t* wcstring = new wchar_t[newsize];
@@ -125,7 +132,9 @@ void Spinner::setSpeed()
 		WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
 		free(wcstring);
 #elif
-		CCLOG("\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\n", first.x, first.y, last.x, last.y, originx, originy, speed);
+		CCLOG("\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\n\n", first.x, first.y, last.x, last.y, originx, originy, speed, score);
 #endif
 	}
+	else
+		forward = false;
 }
