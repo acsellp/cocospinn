@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "SpinnerScene.h"
+#include "FileOperation.h"
 
 #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -50,7 +51,7 @@ void AppDelegate::initGLContextAttrs()
 // don't modify or remove this function
 static int register_all_packages()
 {
-    return 0; //flag for packages manager
+    return 0;
 }
 
 bool AppDelegate::applicationDidFinishLaunching() {
@@ -65,10 +66,20 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #endif
         director->setOpenGLView(glview);
     }
-
+	
+	if (FileOperation::saveFile("./serverData.dt", "5") < 0)
+	{
+#ifdef WIN32
+		str = TEXT("Couldn't opne the file!\n");
+		WriteConsole(AppDelegate::Cons, str, wcslen(str), &(DWORD)AppDelegate::cw, NULL);
+#elif
+		CCLOG("Couldn't open the file!\n");
+#endif
+	}
+	
     // turn on display FPS
     director->setDisplayStats(true);
-
+	
     // set FPS. the default value is 1.0/60 if you don't call this
     director->setAnimationInterval(1.0f / 60);
 

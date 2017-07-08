@@ -11,39 +11,42 @@ Private inheritance here hides part of interface from Director.
 */
 class  AppDelegate : private cocos2d::Application
 {
-public:
-#ifdef WIN32
-	HANDLE Cons;
-	DWORD cw;
-	const wchar_t* str;
-#endif
-	AppDelegate();
-	AppDelegate(HANDLE console)
-	{
-		Cons = console;
-	};
-    virtual ~AppDelegate();
 
-    virtual void initGLContextAttrs();
+	private:
+		uint32_t userID;
+	public:
+	#ifdef WIN32
+		HANDLE Cons;
+		DWORD cw;
+		const wchar_t* str;
+	#endif
+		AppDelegate();
+		AppDelegate(HANDLE console)
+		{
+			Cons = console;
+		};
+		virtual ~AppDelegate();
 
-    /**
-    @brief    Implement Director and Scene init code here.
-    @return true    Initialize success, app continue.
-    @return false   Initialize failed, app terminate.
-    */
-    virtual bool applicationDidFinishLaunching();
+		virtual void initGLContextAttrs();
 
-    /**
-    @brief  Called when the application moves to the background
-    @param  the pointer of the application
-    */
-    virtual void applicationDidEnterBackground();
+		/**
+		@brief    Implement Director and Scene init code here.
+		@return true    Initialize success, app continue.
+		@return false   Initialize failed, app terminate.
+		*/
+		virtual bool applicationDidFinishLaunching();
 
-    /**
-    @brief  Called when the application reenters the foreground
-    @param  the pointer of the application
-    */
-    virtual void applicationWillEnterForeground();
+		/**
+		@brief  Called when the application moves to the background
+		@param  the pointer of the application
+		*/
+		virtual void applicationDidEnterBackground();
+
+		/**
+		@brief  Called when the application reenters the foreground
+		@param  the pointer of the application
+		*/
+		virtual void applicationWillEnterForeground();
 };
 
 #endif // _APP_DELEGATE_H_

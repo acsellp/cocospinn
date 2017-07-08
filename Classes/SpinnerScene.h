@@ -4,7 +4,7 @@
 #include "cocos2d.h"
 #define COCOS_DEBUG 1
 #define MAX_SPEED 100
-#define MIN_SPEED 10
+#define MIN_SPEED 5
 
 class Spinner : public cocos2d::Scene
 {
@@ -22,11 +22,12 @@ private:
 	cocos2d::Point first;
 	cocos2d::Point last;
 	cocos2d::Sequence *sequ;
-	float originx;
-	float originy;
+	float centerx;
+	float centery;
 	float speed;
 	bool forward;
 	uint32_t score;
+	uint32_t serverData;
 
 	char buf[300];
 };
