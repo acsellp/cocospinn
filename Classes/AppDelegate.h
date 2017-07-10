@@ -16,14 +16,14 @@ class  AppDelegate : private cocos2d::Application
 		uint32_t userID;
 	public:
 	#ifdef WIN32
-		HANDLE Cons;
+		HANDLE cons;
 		DWORD cw;
 		const wchar_t* str;
 	#endif
 		AppDelegate();
 		AppDelegate(HANDLE console)
 		{
-			Cons = console;
+			cons = console;
 		};
 		virtual ~AppDelegate();
 

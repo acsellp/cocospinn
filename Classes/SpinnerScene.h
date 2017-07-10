@@ -1,3 +1,4 @@
+#pragma once
 #ifndef __SPINNER_SCENE_H__
 #define __SPINNER_SCENE_H__
 
@@ -9,7 +10,7 @@
 class Spinner : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene* createScene(HANDLE console);
+    static cocos2d::Scene* createScene(HANDLE cons);
     virtual bool init();
 	void setSpeedAndDir(void);
     CREATE_FUNC(Spinner);
@@ -17,6 +18,7 @@ public:
     void TouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
     void TouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 	void TouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event);
+	void menuCallBack(Ref* ref);
 private:
 	cocos2d::Sprite* sprite;
 	cocos2d::Point first;
@@ -25,6 +27,8 @@ private:
 	float centerx;
 	float centery;
 	float speed;
+	float aRot;
+	float nRot;
 	bool forward;
 	uint32_t score;
 	uint32_t serverData;
@@ -32,4 +36,4 @@ private:
 	char buf[300];
 };
 
-#endif // __HELLOWORLD_SCENE_H__
+#endif

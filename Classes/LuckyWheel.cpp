@@ -1,74 +1,86 @@
-#include "SpinnerScene.h"
+#include "LuckyWheel.h"
 #include "SimpleAudioEngine.h"
 
 USING_NS_CC;
 #define COCOS2D_DEBUG 1
 
-HANDLE console1;
-DWORD cw1;
+HANDLE console2;
+DWORD cw2;
 
-
-Scene* Spinner::createScene(HANDLE console)
+Scene* LuckyWheel::createScene(HANDLE console)
 {
-	console1 = console;
-	return Spinner::create();
+	console2 = console;
+	return LuckyWheel::create();
 }
 
-bool Spinner::init()
+bool LuckyWheel::init()
 {
-    if ( !Scene::init() )
-        return false;
-
+	if (!Scene::init())
+	{
+		return false;
+	}
 	score = 0;
 	speed = 0;
 	serverData = 0;
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+	sequ = nullptr;
+	auto visibleSize = Director::getInstance()->getVisibleSize();
+	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	centery = visibleSize.height / 2;
 	centerx = visibleSize.width / 2;
 	Menu* menu = Menu::create();
 	menu->setPosition(0, 0);
-	MenuItemFont* back = MenuItemFont::create("Back", CC_CALLBACK_1(Spinner::menuCallBack, this));
+	MenuItemFont* back = MenuItemFont::create("Back", CC_CALLBACK_1(LuckyWheel::menuCallBack, this));
 	back->setPosition(40.0f, visibleSize.height - 20.0f);
 	menu->addChild(back);
 	this->addChild(menu);
 
-	auto bg = Sprite::create("Background.jpg");
-	bg->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	this->addChild(bg, -1);
+	auto BG = Sprite::create("Background.jpg");
+	BG->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	this->addChild(BG, -1);
 
-    sprite = Sprite::create("Spinner.png");
-    sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	sprite->setScale(0.1f);
+	sprite = Sprite::create("Wheel.png");
+	sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	Size sz = sprite->getContentSize();
 	
+	auto pointer = Sprite::create("pointer.png");
+	pointer->setRotation(180.0f);
+	pointer->setScale(0.4f);
+	pointer->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y + sz.height/1.8));
+	this->addChild(pointer, 1);
+
+	sprite->setScale(0.1f);
+
 	auto scaleTo = ScaleTo::create(0.5f, 1.0f, 1.0f);
 	sprite->runAction(scaleTo);
 	this->addChild(sprite, 0);
 
 	auto touchListener = EventListenerTouchOneByOne::create();
-    touchListener->onTouchBegan = CC_CALLBACK_2(Spinner::TouchBegan, this);	
-    touchListener->onTouchMoved = CC_CALLBACK_2(Spinner::TouchMoved, this);
-    touchListener->onTouchEnded = CC_CALLBACK_2(Spinner::TouchEnded, this);
-	touchListener->onTouchCancelled = CC_CALLBACK_2(Spinner::TouchCancelled, this);
+	touchListener->onTouchBegan = CC_CALLBACK_2(LuckyWheel::touchBegan, this);
+	touchListener->onTouchMoved = CC_CALLBACK_2(LuckyWheel::touchMoved, this);
+	touchListener->onTouchEnded = CC_CALLBACK_2(LuckyWheel::touchEnded, this);
+	touchListener->onTouchCancelled = CC_CALLBACK_2(LuckyWheel::touchCancelled, this);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, sprite);
 	auto rotateBy = RotateBy::create(0.4f, 720.0f);
 	sprite->runAction(rotateBy);
-    return true;
+	return true;
 }
 
-bool Spinner::TouchBegan (Touch* touch, Event* event) 
+bool LuckyWheel::touchBegan(Touch* touch, Event* event)
 {
 	first = Director::getInstance()->convertToGL(touch->getLocationInView());
 	return true;
 }
 
-void Spinner::TouchMoved (Touch* touch, Event* event) 
+void LuckyWheel::touchMoved(Touch* touch, Event* event)
 {
 	Point p = Director::getInstance()->convertToGL(touch->getLocationInView());
+	//auto rotateTo = RotateTo::create(1.0f, 20);
+	//EaseIn  *actionIn = EaseIn::create(rotateTo, 1.0f);
+	//sprite->runAction(rotateTo);
 
 }
 
-void Spinner::TouchEnded (Touch* touch, Event* event) 
+void LuckyWheel::touchEnded(Touch* touch, Event* event)
 {
 	last = Director::getInstance()->convertToGL(touch->getLocationInView());
 	setSpeedAndDir();
@@ -78,29 +90,24 @@ void Spinner::TouchEnded (Touch* touch, Event* event)
 			speed = MAX_SPEED;
 		else if (speed < MIN_SPEED)
 			speed = MIN_SPEED;
-		nRot = MIN_SPEED / speed;
-		aRot = 360.0f * speed / MIN_SPEED;
+		float nRot = MIN_SPEED / speed;
+		float aRot = 300 * speed / MIN_SPEED;
 
-		auto rotateBy = RotateBy::create(nRot/2, aRot/2);
+		auto rotateBy = RotateBy::create(3, aRot/1.5);
 		//rotateBy->setDuration(3.0f);
 		//rotateBy->ActionInterval::initWithDuration(3.0f);
-
-		EaseIn  *actionIn = EaseIn::create(rotateBy, 1.0f);
+		EaseIn  *actionIn = EaseIn::create(rotateBy, 2.0f);
 		//actionIn->ActionInterval::initWithDuration(1.0f);
-		//sprite->runAction(actionIn);
-
-		EaseOut *actionOut = EaseOut::create(rotateBy, 1.0f);
+		
+		EaseOut *actionOut = EaseOut::create(rotateBy, 2.0f);
 		//actionOut->ActionInterval::initWithDuration(1.0f);
 
-		
-		Vector<FiniteTimeAction *> actionVector;
-		actionVector.insert(0, actionIn);
-		actionVector.insert(1, actionOut);
-		sequ = Sequence::create(actionVector);
-		//sequ->ActionInterval::initWithDuration(5.0f);
-		score += aRot;
-
+		Vector<FiniteTimeAction *> actionVec;
+		actionVec.insert(0, actionIn);
+		actionVec.insert(1, actionOut);
+		sequ = Sequence::create(actionVec);
 		sprite->runAction(sequ);
+		score += aRot;
 #ifdef WIN32
 		_snprintf_s(buf, 300, "\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\nServer value %ld\naRot,nRot  %lf,%lf\n\n", \
 			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
@@ -108,21 +115,22 @@ void Spinner::TouchEnded (Touch* touch, Event* event)
 		size_t convertedChars = 0;
 		wchar_t* wcstring = new wchar_t[newsize];
 		mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-		WriteConsole(console1, wcstring, convertedChars, &(DWORD)cw1, NULL);
+		WriteConsole(console2, wcstring, convertedChars, &(DWORD)cw2, NULL);
 		delete[] wcstring;
 #elif
 		CCLOG("\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\n Server value %ld\nRot,nRot  %lf,%lf\n\n", \
 			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
 #endif
+
 	}
 }
 
-void Spinner::TouchCancelled(Touch* touch, Event* event)
+void LuckyWheel::touchCancelled(Touch* touch, Event* event)
 {
-	
+
 }
 
-void Spinner::setSpeedAndDir()
+void LuckyWheel::setSpeedAndDir()
 {
 	if ((first.x < centerx && first.y < centery && abs(first.x - last.x) < centerx / 3 && last.y - first.y > 0 && last.x < centerx) || // left botton
 		(first.x < centerx && first.y > centery && abs(first.y - last.y) < centery / 3 && first.x - last.x < 0) || // left top
@@ -138,7 +146,7 @@ void Spinner::setSpeedAndDir()
 		forward = false;
 }
 
-void Spinner::menuCallBack(Ref* ref)
+void LuckyWheel::menuCallBack(Ref* ref)
 {
 	Director::getInstance()->popScene();
 }

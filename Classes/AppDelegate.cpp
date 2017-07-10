@@ -1,6 +1,7 @@
 #include "AppDelegate.h"
-#include "SpinnerScene.h"
-#include "FileOperation.h"
+//#include "SpinnerScene.h"
+//#include "LuckyWheel.h"
+#include "MainMenu.h"
 
 #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -66,17 +67,6 @@ bool AppDelegate::applicationDidFinishLaunching() {
 #endif
         director->setOpenGLView(glview);
     }
-	
-	if (FileOperation::saveFile("./serverData.dt", "5") < 0)
-	{
-#ifdef WIN32
-		str = TEXT("Couldn't opne the file!\n");
-		WriteConsole(AppDelegate::Cons, str, wcslen(str), &(DWORD)AppDelegate::cw, NULL);
-#elif
-		CCLOG("Couldn't open the file!\n");
-#endif
-	}
-	
     // turn on display FPS
     director->setDisplayStats(true);
 	
@@ -105,9 +95,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
     register_all_packages();
 
 #ifdef WIN32
-	//str = TEXT("Create Scene\n");
-	//WriteConsole(AppDelegate::Cons, str, wcslen(str), &(DWORD)AppDelegate::cw, NULL);
-    auto scene = Spinner::createScene(AppDelegate::Cons);
+	auto scene = MainMenu::createScene(cons);
 #elif
 	auto scene = Spinner::createScene(nullptr);
 #endif
