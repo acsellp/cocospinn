@@ -39,10 +39,10 @@ bool Spinner::init()
 
     sprite = Sprite::create("Spinner.png");
     sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	sprite->setScale(0.1f);
 	
-	auto scaleTo = ScaleTo::create(0.5f, 1.0f, 1.0f);
-	sprite->runAction(scaleTo);
+	//sprite->setScale(0.1f);
+	//auto scaleTo = ScaleTo::create(0.5f, 1.0f, 1.0f);
+	//sprite->runAction(scaleTo);
 	this->addChild(sprite, 0);
 
 	auto touchListener = EventListenerTouchOneByOne::create();
@@ -110,7 +110,7 @@ void Spinner::TouchEnded (Touch* touch, Event* event)
 		mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
 		WriteConsole(console1, wcstring, convertedChars, &(DWORD)cw1, NULL);
 		delete[] wcstring;
-#elif
+#else
 		CCLOG("\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\n Server value %ld\nRot,nRot  %lf,%lf\n\n", \
 			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
 #endif

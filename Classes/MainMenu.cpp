@@ -1,6 +1,7 @@
 #include "MainMenu.h"
 #include "SpinnerScene.h"
 #include "LuckyWheel.h"
+#include "DrawWheel.h"
 
 
 USING_NS_CC;
@@ -21,6 +22,7 @@ bool MainMenu::init()
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
+
 	auto bg = Sprite::create("Background.jpg");
 	bg->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	this->addChild(bg, -1);
@@ -33,6 +35,7 @@ bool MainMenu::init()
 	menu->addChild(spinner);
 	menu->addChild(wheel);
 	this->addChild(menu);
+	
 	return true;
 }
 
@@ -40,7 +43,7 @@ void MainMenu::spinnerCallBack(Ref* ref)
 {
 #ifdef WIN32
 	auto spinner = Spinner::createScene(console);
-#elif
+#else
 	auto spinner = Spinner::createScene(nullptr);
 #endif
 	//Director::getInstance()->replaceScene(spinner);
@@ -51,9 +54,10 @@ void MainMenu::wheelCallBack(Ref* ref)
 {
 #ifdef WIN32
 	auto wheel = LuckyWheel::createScene(console);
-#elif
+#else
 	auto wheel = LuckyWheel::createScene(nullptr);
 #endif
 	//Director::getInstance()->replaceScene(spinner);
 	Director::getInstance()->pushScene(wheel);
+
 }

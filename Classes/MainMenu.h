@@ -5,12 +5,10 @@
 class MainMenu : public cocos2d::Scene
 {
 public:
-	static cocos2d::Scene* createScene(HANDLE cons);
-	virtual bool init();
+	static cocos2d::Scene*	createScene(HANDLE cons);
+	virtual bool			init();
+	void					spinnerCallBack(cocos2d::Ref* ref);
+	void					wheelCallBack(cocos2d::Ref* ref);
 	CREATE_FUNC(MainMenu);
-	void MainMenu::spinnerCallBack(cocos2d::Ref* ref);
-	void MainMenu::wheelCallBack(cocos2d::Ref* ref);
 };
-
-
 #endif

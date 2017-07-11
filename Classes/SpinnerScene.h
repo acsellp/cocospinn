@@ -10,15 +10,15 @@
 class Spinner : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene* createScene(HANDLE cons);
-    virtual bool init();
-	void setSpeedAndDir(void);
-    CREATE_FUNC(Spinner);
-    bool TouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
-    void TouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
-    void TouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
-	void TouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event);
-	void menuCallBack(Ref* ref);
+    static cocos2d::Scene*	createScene(HANDLE cons);
+    virtual bool			init();
+	void					setSpeedAndDir(void);
+    bool					TouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
+    void					TouchMoved(cocos2d::Touch* touch, cocos2d::Event* event);
+    void					TouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
+	void					TouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event);
+	void					menuCallBack(Ref* ref);
+	CREATE_FUNC(Spinner);
 private:
 	cocos2d::Sprite* sprite;
 	cocos2d::Point first;
