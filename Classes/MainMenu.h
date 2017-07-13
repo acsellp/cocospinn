@@ -9,6 +9,7 @@ public:
 	virtual bool			init();
 	void					spinnerCallBack(cocos2d::Ref* ref);
 	void					wheelCallBack(cocos2d::Ref* ref);
+	virtual void			update(float dt);
 	CREATE_FUNC(MainMenu);
 };
 #endif

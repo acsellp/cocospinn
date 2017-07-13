@@ -7,26 +7,25 @@ USING_NS_CC;
 
 HANDLE console2;
 DWORD cw2;
+int sections;
 
-Scene* LuckyWheel::createScene(HANDLE console)
+Scene* LuckyWheel::createScene(HANDLE console, int sec)
 {
 	console2 = console;
+	sections = sec;
 	return LuckyWheel::create();
 }
 
 bool LuckyWheel::init()
 {
 	if (!Scene::init())
-	{
 		return false;
-	}
+
 	score = 0;
 	speed = 0;
 	serverData = 0;
-	sequ = nullptr; 
 	sec = NULL;
-	sections = 5;
-
+	ps = NULL;
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 	centery = visibleSize.height / 2;
@@ -42,33 +41,35 @@ bool LuckyWheel::init()
 	BG->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
 	this->addChild(BG, -1);
 	
-	//auto layer = DrawWheel::createlayer(console2, 11);
-	//this->addChild(layer);
-	//auto rot = RotateBy::create(5, 400);
-	//layer->runAction(rot);
-	
-	sprite = DrawWheel::createlayer(console2, 11); // 11 SECTIONS
-	Size sz = sprite->getContentSize();
-	
+
+	//sprite = Sprite::create("Wheel.png");
+	//sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	Layer* layer = DrawWheel::createlayer(console2, sections);
+	Size sz = layer->getContentSize();
+
 	auto pointer = Sprite::create("pointer.png");
 	pointer->setRotation(180.0f);
 	pointer->setScale(0.4f);
 	pointer->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y + sz.height/1.8));
 	this->addChild(pointer, 1);
 
-	sprite->setScale(0.1f);
+	layer->setScale(0.1f);
 	auto scaleTo = ScaleTo::create(0.5f, 1.0f, 1.0f);
-	sprite->runAction(scaleTo);
-	this->addChild(sprite, 0);
+	layer->runAction(scaleTo);
+	layer->setTag(666);
+	this->addChild(layer, 0);
+
+	//layer->scheduleUpdate(); // UPDATE
 
 	auto touchListener = EventListenerTouchOneByOne::create();
 	touchListener->onTouchBegan = CC_CALLBACK_2(LuckyWheel::touchBegan, this);
 	touchListener->onTouchMoved = CC_CALLBACK_2(LuckyWheel::touchMoved, this);
 	touchListener->onTouchEnded = CC_CALLBACK_2(LuckyWheel::touchEnded, this);
 	touchListener->onTouchCancelled = CC_CALLBACK_2(LuckyWheel::touchCancelled, this);
-	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, sprite);
+	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, layer);
 	auto rotateBy = RotateBy::create(0.4f, 720.0f);
-	sprite->runAction(rotateBy);
+	layer->runAction(rotateBy);
+	
 	LuckyWheel::initSections();
 	return true;
 }
@@ -82,9 +83,6 @@ bool LuckyWheel::touchBegan(Touch* touch, Event* event)
 void LuckyWheel::touchMoved(Touch* touch, Event* event)
 {
 	Point p = Director::getInstance()->convertToGL(touch->getLocationInView());
-	//auto rotateTo = RotateTo::create(1.0f, 20);
-	//EaseIn  *actionIn = EaseIn::create(rotateTo, 1.0f);
-	//sprite->runAction(rotateTo);
 }
 
 void LuckyWheel::touchEnded(Touch* touch, Event* event)
@@ -108,21 +106,35 @@ void LuckyWheel::touchEnded(Touch* touch, Event* event)
 		uint8_t index = LuckyWheel::getSectionIndex(positionAfterRot);
 		LuckyWheel::updateSectionPosition(positionAfterRot);
 		auto rotateBy = RotateBy::create(2, aRot / 2);
-		//rotateBy->setDuration(3.0f);
-		//rotateBy->ActionInterval::initWithDuration(3.0f);
-		EaseIn  *actionIn = EaseIn::create(rotateBy, 2.0f);
-		//actionIn->ActionInterval::initWithDuration(1.0f);
+		//todo time
 		
+		EaseIn  *actionIn = EaseIn::create(rotateBy, 2.0f);
 		EaseOut *actionOut = EaseOut::create(rotateBy, 2.0f);
-		//actionOut->ActionInterval::initWithDuration(1.0f);
+		auto* remove = RemoveSelf::create(true);
+		auto callback = CallFunc::create(this, callfunc_selector(LuckyWheel::updateCallBack));
+
 
 		Vector<FiniteTimeAction *> actionVec;
 		actionVec.insert(0, actionIn);
 		actionVec.insert(1, actionOut);
-		sequ = Sequence::create(actionVec);
-		sprite->runAction(sequ);
+		actionVec.insert(2, remove);
+		actionVec.insert(3, callback);
+
+		Sequence *sequ = Sequence::create(actionVec);
+		sequ->setTag(6);
+		if (this->getChildByTag(666) != nullptr)
+			this->getChildByTag(666)->runAction(sequ);
+		else
+		{
+			// todo node check
+		}
 		score += aRot;
-		
+
+		if (sections < 20)
+			sections += 2;
+		else
+			sections = 5;
+
 		char* pc;
 		if (index >= 0 && index <= 4)
 			pc = sec[index].sectionParam;
@@ -183,7 +195,7 @@ void LuckyWheel::updateSectionPosition(float newPositin)
 		sec[i].supAngle -= newPositin;
 		if (sec[i].supAngle < 0)
 			sec[i].supAngle *= -1;
-		
+/*
 #ifdef WIN32
 		_snprintf_s(buf, 300, "\n   %s  before %lf,%lf after %lf,%lf\n", sec[i].sectionParam, bef1, bef2, sec[i].infAngle, sec[i].supAngle);
 		size_t newsize = strlen(buf) + 1;
@@ -195,6 +207,7 @@ void LuckyWheel::updateSectionPosition(float newPositin)
 #else
 		CCLOG("\n   %s  before %lf,%lf after %lf,%lf\n", sec[i].sectionParam, bef1, bef2, sec[i].infAngle, sec[i].supAngle);
 #endif
+*/
 		i++;
 	}
 
@@ -238,4 +251,25 @@ void LuckyWheel::initSections()
 	sec[4].infAngle = 360.0f / sections * 4;
 	sec[4].supAngle = 360.0f;
 	strcpy(sec[4].sectionParam, "Mr.Kwok");
+}
+
+void  LuckyWheel::update(float tm)
+{
+	if (this->getChildByTag(666) != nullptr)
+	{
+
+	}
+}
+
+
+LuckyWheel::~LuckyWheel()
+{
+	if (sec != NULL)
+		delete[] sec;
+}
+
+void LuckyWheel::updateCallBack()
+{
+	auto wheel = LuckyWheel::createScene(console2, sections);
+	Director::getInstance()->replaceScene(wheel);
 }

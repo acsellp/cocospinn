@@ -16,8 +16,8 @@ bool DrawWheel::init()
 {
 	if (!Layer::init())
 		return false;
-#ifdef WIN32
 	int i;
+#ifdef WIN32
 	char buf[300];
 	_snprintf_s(buf, 300, "\n\n\n Draw  [%d] Sections  \n\n", sectionNum);
 	size_t newsize = strlen(buf) + 1;
@@ -33,22 +33,24 @@ bool DrawWheel::init()
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	i = 0;
-	sectionNum = 13;
+	//sectionNum = 12;
+
 	float dec = 360.0f / sectionNum;
 	float angle = 360.0f;
 	while (i < sectionNum)
 	{
 		secvector.insert(i, DrawNode::create());
-		if (i % 3 == 0)
-			drawSection(secvector.at(i), Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y), 120.0f, angle, Color4F::BLUE);
-		else if (i % 2 == 0)
+		if (i == 0)
 			drawSection(secvector.at(i), Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y), 120.0f, angle, Color4F::GREEN);
+		else if (i % 2 == 0)
+			drawSection(secvector.at(i), Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y), 120.0f, angle, Color4F::BLACK);
 		else
 			drawSection(secvector.at(i), Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y), 120.0f, angle, Color4F::RED);
 		this->addChild(secvector.at(i));
 		angle -= dec;
 		i++;
 	}
+	//auto lay = TextFieldTTF::createWithSystemFont("1", "Courier", 10, );
 
 	//auto bg = Sprite::create("Background.jpg");
 	//bg->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));

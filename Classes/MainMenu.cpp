@@ -53,11 +53,26 @@ void MainMenu::spinnerCallBack(Ref* ref)
 void MainMenu::wheelCallBack(Ref* ref)
 {
 #ifdef WIN32
-	auto wheel = LuckyWheel::createScene(console);
+	auto wheel = LuckyWheel::createScene(console, 11);
 #else
 	auto wheel = LuckyWheel::createScene(nullptr);
 #endif
 	//Director::getInstance()->replaceScene(spinner);
 	Director::getInstance()->pushScene(wheel);
+}
 
+void MainMenu::update(float tm)
+{
+#ifdef WIN32
+	char buf[50];
+	_snprintf_s(buf, 30, "\n   update \n\n");
+	size_t newsize = strlen(buf) + 1;
+	size_t convertedChars = 0;
+	wchar_t* wcstring = new wchar_t[newsize];
+	mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
+	WriteConsole(console, wcstring, convertedChars, &(DWORD)cw, NULL);
+	delete[] wcstring;
+#else
+	CCLOG("\n   update \n\n");
+#endif
 }
