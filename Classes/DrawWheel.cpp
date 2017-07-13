@@ -2,8 +2,9 @@
 
 USING_NS_CC;
 
-HANDLE console4;
-int sectionNum;
+HANDLE	console4;
+int		sectionNum;
+DWORD	cw4;
 
 Layer* DrawWheel::createlayer(HANDLE cons, int sects)
 {
@@ -24,7 +25,7 @@ bool DrawWheel::init()
 	size_t convertedChars = 0;
 	wchar_t* wcstring = new wchar_t[newsize];
 	mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-	WriteConsole(console4, wcstring, convertedChars, &(DWORD)DrawWheel::cw4, NULL);
+	WriteConsole(console4, wcstring, convertedChars, &(DWORD)cw4, NULL);
 	delete[] wcstring;
 #else
 	CCLOG("\n\n\n Draw [%d] Sections\n\n", sectionNum);
@@ -35,27 +36,35 @@ bool DrawWheel::init()
 	i = 0;
 	//sectionNum = 12;
 
+	float radius = 120.0f;
 	float dec = 360.0f / sectionNum;
 	float angle = 360.0f;
+	float textPos = angle / (sectionNum * 2);
+	float centerx = visibleSize.width / 2 + origin.x;
+	float centery = visibleSize.height / 2 + origin.y;
+	float textRotationAngle = 110;
 	while (i < sectionNum)
 	{
 		secvector.insert(i, DrawNode::create());
 		if (i == 0)
-			drawSection(secvector.at(i), Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y), 120.0f, angle, Color4F::GREEN);
+			drawSection(secvector.at(i), Vec2(centerx, centery), radius, angle, Color4F::GREEN);
 		else if (i % 2 == 0)
-			drawSection(secvector.at(i), Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y), 120.0f, angle, Color4F::BLACK);
+			drawSection(secvector.at(i), Vec2(centerx, centery), radius, angle, Color4F::BLACK);
 		else
-			drawSection(secvector.at(i), Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y), 120.0f, angle, Color4F::RED);
-		this->addChild(secvector.at(i));
+			drawSection(secvector.at(i), Vec2(centerx, centery), radius, angle, Color4F::RED);
+		this->addChild(secvector.at(i), 0);
+
+		textVector.insert(i, LabelTTF::create(std::to_string(i + 1), "Monospace", 22));
+		textVector.at(i)->setPosition(Vec2(centerx + (radius - radius / 12) * cosf(6.28 * (angle - textPos) / 360.0f) ,
+			centery + (radius - radius / 12) * sinf(6.28 * (angle - textPos) / 360.0f)));
+		//textVector.at(i)->setAnchorPoint(Vec2(0, 0));
+		textVector.at(i)->setRotation(textRotationAngle);
+		this->addChild(textVector.at(i), 1);
+		
 		angle -= dec;
+		textRotationAngle += 10;
 		i++;
 	}
-	//auto lay = TextFieldTTF::createWithSystemFont("1", "Courier", 10, );
-
-	//auto bg = Sprite::create("Background.jpg");
-	//bg->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	//this->addChild(bg, -1);
-
 	return true;
 }
 

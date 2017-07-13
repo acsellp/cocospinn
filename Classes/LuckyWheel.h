@@ -33,23 +33,17 @@ public:
 	void			updateCallBack(void);
 	~LuckyWheel();
 private:
-	//cocos2d::Layer* layer;
-	cocos2d::Point first;
-	cocos2d::Point last;
-	//cocos2d::Sequence *sequ;
-	float centerx;
-	float centery;
-	float speed;
-	float aRot;
-	float nRot;
-	bool forward;
-	uint32_t score;
-	uint32_t serverData;
-	wheelSection_t* sec;
-	//int sections;
-	cocos2d::Sequence* ps;
-
-	char buf[300];
+	cocos2d::Point	first;
+	cocos2d::Point	last;
+	float			centerx;
+	float			centery;
+	float			speed;
+	float			aRot;
+	float			nRot;
+	bool			forward;
+	uint32_t		score;
+	uint32_t		serverData;
+	wheelSection_t*	sec;
 };
 
 #endif
