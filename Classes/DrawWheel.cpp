@@ -42,7 +42,8 @@ bool DrawWheel::init()
 	float textPos = angle / (sectionNum * 2);
 	float centerx = visibleSize.width / 2 + origin.x;
 	float centery = visibleSize.height / 2 + origin.y;
-	float textRotationAngle = 110;
+	float textRotationAngle = 90 + textPos;
+	// TODO update color
 	while (i < sectionNum)
 	{
 		secvector.insert(i, DrawNode::create());
@@ -54,15 +55,14 @@ bool DrawWheel::init()
 			drawSection(secvector.at(i), Vec2(centerx, centery), radius, angle, Color4F::RED);
 		this->addChild(secvector.at(i), 0);
 
-		textVector.insert(i, LabelTTF::create(std::to_string(i + 1), "Monospace", 22));
+		textVector.insert(i, LabelTTF::create(std::to_string(i + 1), "Arial", 22));
 		textVector.at(i)->setPosition(Vec2(centerx + (radius - radius / 12) * cosf(6.28 * (angle - textPos) / 360.0f) ,
 			centery + (radius - radius / 12) * sinf(6.28 * (angle - textPos) / 360.0f)));
-		//textVector.at(i)->setAnchorPoint(Vec2(0, 0));
 		textVector.at(i)->setRotation(textRotationAngle);
 		this->addChild(textVector.at(i), 1);
 		
 		angle -= dec;
-		textRotationAngle += 10;
+		textRotationAngle += textPos * 2;
 		i++;
 	}
 	return true;

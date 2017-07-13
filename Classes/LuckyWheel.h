@@ -6,6 +6,8 @@
 #define MAX_SPEED 100
 #define MIN_SPEED 5
 
+#define WHEEL_TAG 1000
+#define SEQUENCE_TAG 2000
 
 typedef struct	wheelSections_s
 {

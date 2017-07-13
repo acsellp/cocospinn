@@ -56,7 +56,7 @@ bool LuckyWheel::init()
 	//layer->setScale(0.1f);
 	//auto scaleTo = ScaleTo::create(0.5f, 1.0f, 1.0f);
 	//layer->runAction(scaleTo);
-	layer->setTag(666);
+	layer->setTag(WHEEL_TAG);
 	this->addChild(layer, 0);
 
 	//layer->scheduleUpdate(); // UPDATE
@@ -89,7 +89,7 @@ void LuckyWheel::touchEnded(Touch* touch, Event* event)
 {
 	last = Director::getInstance()->convertToGL(touch->getLocationInView());
 	setSpeedAndDir();
-	if (forward)
+	if (forward && this->getChildByTag(WHEEL_TAG)->getActionByTag(SEQUENCE_TAG) == nullptr)
 	{
 		if (speed > MAX_SPEED)
 			speed = MAX_SPEED;
@@ -124,10 +124,10 @@ void LuckyWheel::touchEnded(Touch* touch, Event* event)
 		actionVec.insert(4, callback);
 
 		Sequence *sequ = Sequence::create(actionVec);
-		sequ->setTag(6);
+		sequ->setTag(SEQUENCE_TAG);
 
-		if (this->getChildByTag(666) != nullptr)
-			this->getChildByTag(666)->runAction(sequ);
+		if (this->getChildByTag(WHEEL_TAG) != nullptr)
+			this->getChildByTag(WHEEL_TAG)->runAction(sequ);
 		else
 		{
 			// todo node check
@@ -255,7 +255,7 @@ void LuckyWheel::initSections()
 
 void  LuckyWheel::update(float tm)
 {
-	if (this->getChildByTag(666) != nullptr)
+	if (this->getChildByTag(WHEEL_TAG) != nullptr)
 	{
 
 	}
