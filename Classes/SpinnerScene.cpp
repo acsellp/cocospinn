@@ -1,16 +1,12 @@
 #include "SpinnerScene.h"
 #include "SimpleAudioEngine.h"
+#include "Api.h"
 
 USING_NS_CC;
-#define COCOS2D_DEBUG 1
-
-HANDLE console1;
-DWORD cw1;
 
 
-Scene* Spinner::createScene(HANDLE console)
+Scene* Spinner::createScene()
 {
-	console1 = console;
 	return Spinner::create();
 }
 
@@ -101,19 +97,11 @@ void Spinner::TouchEnded (Touch* touch, Event* event)
 		score += aRot;
 
 		sprite->runAction(sequ);
-#ifdef WIN32
+		
+		char buf[300];
 		_snprintf_s(buf, 300, "\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\nServer value %ld\naRot,nRot  %lf,%lf\n\n", \
 			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
-		size_t newsize = strlen(buf) + 1;
-		size_t convertedChars = 0;
-		wchar_t* wcstring = new wchar_t[newsize];
-		mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-		WriteConsole(console1, wcstring, convertedChars, &(DWORD)cw1, NULL);
-		delete[] wcstring;
-#else
-		CCLOG("\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\n Server value %ld\nRot,nRot  %lf,%lf\n\n", \
-			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
-#endif
+		debug(buf);
 	}
 }
 

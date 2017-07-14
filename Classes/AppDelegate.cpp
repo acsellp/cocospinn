@@ -1,5 +1,6 @@
 #include "AppDelegate.h"
 #include "MainMenu.h"
+#include "Api.h"
 
 // #define USE_AUDIO_ENGINE 1
 // #define USE_SIMPLE_AUDIO_ENGINE 1
@@ -86,15 +87,11 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
 
     register_all_packages();
+	debug("AppDelegate\n\n");
 
-#ifdef WIN32
-	auto scene = MainMenu::createScene(cons);
-#else
-	auto scene = MainMennu::createScene(nullptr);
-#endif
-    // run
+	auto scene = MainMenu::createScene();
+    
     director->runWithScene(scene);
-
     return true;
 }
 

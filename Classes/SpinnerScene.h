@@ -10,7 +10,7 @@
 class Spinner : public cocos2d::Scene
 {
 public:
-    static cocos2d::Scene*	createScene(HANDLE cons);
+    static cocos2d::Scene*	createScene();
     virtual bool			init();
 	void					setSpeedAndDir(void);
     bool					TouchBegan(cocos2d::Touch* touch, cocos2d::Event* event);
@@ -20,20 +20,18 @@ public:
 	void					menuCallBack(Ref* ref);
 	CREATE_FUNC(Spinner);
 private:
-	cocos2d::Sprite* sprite;
-	cocos2d::Point first;
-	cocos2d::Point last;
-	cocos2d::Sequence *sequ;
-	float centerx;
-	float centery;
-	float speed;
-	float aRot;
-	float nRot;
-	bool forward;
-	uint32_t score;
-	uint32_t serverData;
-
-	char buf[300];
+	cocos2d::Sprite*	sprite;
+	cocos2d::Point		first;
+	cocos2d::Point		last;
+	cocos2d::Sequence	*sequ;
+	float				centerx;
+	float				centery;
+	float				speed;
+	float				aRot;
+	float				nRot;
+	bool				forward;
+	uint32_t			score;
+	uint32_t			serverData;
 };
 
 #endif

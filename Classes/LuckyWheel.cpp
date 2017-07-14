@@ -1,18 +1,15 @@
 #include "LuckyWheel.h"
 #include "SimpleAudioEngine.h"
 #include "DrawWheel.h"
+#include "Api.h"
 
 USING_NS_CC;
 #define COCOS2D_DEBUG 1
 
-HANDLE console2;
-DWORD cw2;
-int sections;
 
-Scene* LuckyWheel::createScene(HANDLE console, int sec)
+
+Scene* LuckyWheel::createScene()
 {
-	console2 = console;
-	sections = sec;
 	return LuckyWheel::create();
 }
 
@@ -20,7 +17,7 @@ bool LuckyWheel::init()
 {
 	if (!Scene::init())
 		return false;
-
+	LuckyWheel::sections = getWheelSections();
 	score = 0;
 	speed = 0;
 	serverData = 0;
@@ -44,7 +41,7 @@ bool LuckyWheel::init()
 
 	//sprite = Sprite::create("Wheel.png");
 	//sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	Layer* layer = DrawWheel::createlayer(console2, sections);
+	Layer* layer = DrawWheel::createlayer();
 	Size sz = layer->getContentSize();
 
 	auto pointer = Sprite::create("pointer.png");
@@ -134,25 +131,21 @@ void LuckyWheel::touchEnded(Touch* touch, Event* event)
 		}
 		score += aRot;
 
-		if (sections < 20)
-			sections += 2;
+		if (LuckyWheel::sections < 20)
+		{
+			LuckyWheel::sections += 2;
+			setWheelSections(LuckyWheel::sections);
+		}
 		else
-			sections = 5;
+		{
+			LuckyWheel::sections = 5;
+			setWheelSections(5);
+		}
 
-#ifdef WIN32
 		char buf[300];
 		_snprintf_s(buf, 300, "\n\n\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\nServer value %ld\naRot,nRot  %lf,%lf\nSection index %d\n\n", \
 			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot, index);
-		size_t newsize = strlen(buf) + 1;
-		size_t convertedChars = 0;
-		wchar_t* wcstring = new wchar_t[newsize];
-		mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-		WriteConsole(console2, wcstring, convertedChars, &(DWORD)cw2, NULL);
-		delete[] wcstring;
-#else
-		CCLOG("\n\n\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\n Server value %ld\nRot,nRot  %lf,%lf\n\n", \
-			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
-#endif
+		debug(buf);
 	}
 }
 
@@ -186,7 +179,7 @@ void LuckyWheel::updateSectionPosition(float newPositin)
 {
 	int i = 0;
 
-	while (i < sections)
+	while (i < LuckyWheel::sections)
 	{
 		float bef1 = sec[i].infAngle, bef2 = sec[i].supAngle;
 		sec[i].infAngle -= newPositin;
@@ -195,19 +188,7 @@ void LuckyWheel::updateSectionPosition(float newPositin)
 		sec[i].supAngle -= newPositin;
 		if (sec[i].supAngle < 0)
 			sec[i].supAngle *= -1;
-/*
-#ifdef WIN32
-		_snprintf_s(buf, 300, "\n   %s  before %lf,%lf after %lf,%lf\n", sec[i].sectionParam, bef1, bef2, sec[i].infAngle, sec[i].supAngle);
-		size_t newsize = strlen(buf) + 1;
-		size_t convertedChars = 0;
-		wchar_t* wcstring = new wchar_t[newsize];
-		mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-		WriteConsole(console2, wcstring, convertedChars, &(DWORD)cw2, NULL);
-		delete[] wcstring;
-#else
-		CCLOG("\n   %s  before %lf,%lf after %lf,%lf\n", sec[i].sectionParam, bef1, bef2, sec[i].infAngle, sec[i].supAngle);
-#endif
-*/
+
 		i++;
 	}
 
@@ -216,7 +197,7 @@ void LuckyWheel::updateSectionPosition(float newPositin)
 uint8_t LuckyWheel::getSectionIndex(float angle)
 {
 	uint8_t i = 0;
-	while (i < sections)
+	while (i < LuckyWheel::sections)
 	{
 		if (sec[i].infAngle < angle && sec[i].supAngle > angle)
 			return i;
@@ -230,25 +211,25 @@ void LuckyWheel::initSections()
 	//todo vectors push pop...
 	if (sec != NULL)
 		delete[] sec;
-	sec = new wheelSection_t[sections];
+	sec = new wheelSection_t[LuckyWheel::sections];
 
 	sec[0].infAngle = 0.0f;
-	sec[0].supAngle = 360.0f / sections;
+	sec[0].supAngle = 360.0f / LuckyWheel::sections;
 	strcpy(sec[0].sectionParam, "Mr.Wong");
 
-	sec[1].infAngle = 360.0f / sections;
-	sec[1].supAngle = 360.0f / sections * 2;
+	sec[1].infAngle = 360.0f / LuckyWheel::sections;
+	sec[1].supAngle = 360.0f / LuckyWheel::sections * 2;
 	strcpy(sec[1].sectionParam, "Mr.Chan");
 
-	sec[2].infAngle = 360.0f / sections * 2;
-	sec[2].supAngle = 360.0f / sections * 3;
+	sec[2].infAngle = 360.0f / LuckyWheel::sections * 2;
+	sec[2].supAngle = 360.0f / LuckyWheel::sections * 3;
 	strcpy(sec[2].sectionParam, "Miss Li");
 
-	sec[3].infAngle = 360.0f / sections * 3;
-	sec[3].supAngle = 360.0f / sections * 4;
+	sec[3].infAngle = 360.0f / LuckyWheel::sections * 3;
+	sec[3].supAngle = 360.0f / LuckyWheel::sections * 4;
 	strcpy(sec[3].sectionParam, "Mr.Lee");
 
-	sec[4].infAngle = 360.0f / sections * 4;
+	sec[4].infAngle = 360.0f / LuckyWheel::sections * 4;
 	sec[4].supAngle = 360.0f;
 	strcpy(sec[4].sectionParam, "Mr.Kwok");
 }
@@ -269,6 +250,6 @@ LuckyWheel::~LuckyWheel()
 
 void LuckyWheel::updateCallBack()
 {
-	auto wheel = LuckyWheel::createScene(console2, sections);
+	auto wheel = LuckyWheel::createScene();
 	Director::getInstance()->replaceScene(TransitionSlideInB::create(0.5f, wheel));
 }

@@ -1,15 +1,10 @@
 #include "DrawWheel.h"
+#include "Api.h"
 
 USING_NS_CC;
 
-HANDLE	console4;
-int		sectionNum;
-DWORD	cw4;
-
-Layer* DrawWheel::createlayer(HANDLE cons, int sects)
+Layer* DrawWheel::createlayer()
 {
-	console4 = cons;
-	sectionNum = sects;
 	return DrawWheel::create();
 }
 
@@ -18,33 +13,27 @@ bool DrawWheel::init()
 	if (!Layer::init())
 		return false;
 	int i;
-#ifdef WIN32
+	DrawWheel::sectionNum = getWheelSections();
 	char buf[300];
-	_snprintf_s(buf, 300, "\n\n\n Draw  [%d] Sections  \n\n", sectionNum);
-	size_t newsize = strlen(buf) + 1;
-	size_t convertedChars = 0;
-	wchar_t* wcstring = new wchar_t[newsize];
-	mbstowcs_s(&convertedChars, wcstring, newsize, buf, _TRUNCATE);
-	WriteConsole(console4, wcstring, convertedChars, &(DWORD)cw4, NULL);
-	delete[] wcstring;
-#else
-	CCLOG("\n\n\n Draw [%d] Sections\n\n", sectionNum);
-#endif
+	_snprintf_s(buf, 300, "\n\n Draw  [%d] Sections  \n\n", DrawWheel::sectionNum);
+	debug(buf);
+
+	
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	i = 0;
-	//sectionNum = 12;
+	
 
 	float radius = 120.0f;
-	float dec = 360.0f / sectionNum;
+	float dec = 360.0f / DrawWheel::sectionNum;
 	float angle = 360.0f;
-	float textPos = angle / (sectionNum * 2);
+	float textPos = angle / (DrawWheel::sectionNum * 2);
 	float centerx = visibleSize.width / 2 + origin.x;
 	float centery = visibleSize.height / 2 + origin.y;
 	float textRotationAngle = 90 + textPos;
 	// TODO update color
-	while (i < sectionNum)
+	while (i < DrawWheel::sectionNum)
 	{
 		secvector.insert(i, DrawNode::create());
 		if (i == 0)
