@@ -4,9 +4,6 @@
 #include "Api.h"
 
 USING_NS_CC;
-#define COCOS2D_DEBUG 1
-
-
 
 Scene* LuckyWheel::createScene()
 {
@@ -17,10 +14,9 @@ bool LuckyWheel::init()
 {
 	if (!Scene::init())
 		return false;
-	LuckyWheel::sections = getWheelSections();
+	LuckyWheel::sections = API::getWheelSections();
 	score = 0;
 	speed = 0;
-	serverData = 0;
 	sec = NULL;
 
 	auto visibleSize = Director::getInstance()->getVisibleSize();
@@ -86,7 +82,7 @@ void LuckyWheel::touchEnded(Touch* touch, Event* event)
 {
 	last = Director::getInstance()->convertToGL(touch->getLocationInView());
 	setSpeedAndDir();
-	if (forward && this->getChildByTag(WHEEL_TAG)->getActionByTag(SEQUENCE_TAG) == nullptr)
+	if (forward && this->getChildByTag(WHEEL_TAG)->getActionByTag(WHEEL_SEQUENCE_TAG) == nullptr)
 	{
 		if (speed > MAX_SPEED)
 			speed = MAX_SPEED;
@@ -121,7 +117,7 @@ void LuckyWheel::touchEnded(Touch* touch, Event* event)
 		actionVec.insert(4, callback);
 
 		Sequence *sequ = Sequence::create(actionVec);
-		sequ->setTag(SEQUENCE_TAG);
+		sequ->setTag(WHEEL_SEQUENCE_TAG);
 
 		if (this->getChildByTag(WHEEL_TAG) != nullptr)
 			this->getChildByTag(WHEEL_TAG)->runAction(sequ);
@@ -134,18 +130,19 @@ void LuckyWheel::touchEnded(Touch* touch, Event* event)
 		if (LuckyWheel::sections < 20)
 		{
 			LuckyWheel::sections += 2;
-			setWheelSections(LuckyWheel::sections);
+			API::updateWheelSections(LuckyWheel::sections);
 		}
 		else
 		{
 			LuckyWheel::sections = 5;
-			setWheelSections(5);
+			API::updateWheelSections(5);
 		}
-
+#if (COCOS2D_DEBUG)
 		char buf[300];
-		_snprintf_s(buf, 300, "\n\n\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\nServer value %ld\naRot,nRot  %lf,%lf\nSection index %d\n\n", \
-			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot, index);
-		debug(buf);
+		_snprintf_s(buf, 300, "\n\n\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\naRot,nRot  %lf,%lf\nSection index %d\n\n", \
+			first.x, first.y, last.x, last.y, centerx, centery, speed, score, aRot, nRot, index);
+		API::debug(buf);
+#endif
 	}
 }
 
@@ -191,7 +188,6 @@ void LuckyWheel::updateSectionPosition(float newPositin)
 
 		i++;
 	}
-
 }
 
 uint8_t LuckyWheel::getSectionIndex(float angle)
@@ -236,10 +232,7 @@ void LuckyWheel::initSections()
 
 void  LuckyWheel::update(float tm)
 {
-	if (this->getChildByTag(WHEEL_TAG) != nullptr)
-	{
-
-	}
+	//API::updateWheelScore();
 }
 
 LuckyWheel::~LuckyWheel()
@@ -253,3 +246,4 @@ void LuckyWheel::updateCallBack()
 	auto wheel = LuckyWheel::createScene();
 	Director::getInstance()->replaceScene(TransitionSlideInB::create(0.5f, wheel));
 }
+

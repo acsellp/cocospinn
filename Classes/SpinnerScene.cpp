@@ -4,7 +4,6 @@
 
 USING_NS_CC;
 
-
 Scene* Spinner::createScene()
 {
 	return Spinner::create();
@@ -12,7 +11,7 @@ Scene* Spinner::createScene()
 
 bool Spinner::init()
 {
-    if ( !Scene::init() )
+    if (!Scene::init())
         return false;
 
 	score = 0;
@@ -97,11 +96,12 @@ void Spinner::TouchEnded (Touch* touch, Event* event)
 		score += aRot;
 
 		sprite->runAction(sequ);
-		
+#if (COCOS2D_DEBUG)
 		char buf[300];
 		_snprintf_s(buf, 300, "\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\nServer value %ld\naRot,nRot  %lf,%lf\n\n", \
 			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
-		debug(buf);
+		API::debug(buf);
+#endif
 	}
 }
 
@@ -129,4 +129,9 @@ void Spinner::setSpeedAndDir()
 void Spinner::menuCallBack(Ref* ref)
 {
 	Director::getInstance()->popScene();
+}
+
+void Spinner::update(float dt)
+{
+	//API::updateSpinnerScore();
 }

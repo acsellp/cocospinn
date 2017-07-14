@@ -39,7 +39,6 @@ private:
 	bool			forward;
 	int				sections;
 	uint32_t		score;
-	uint32_t		serverData;
 	wheelSection_t*	sec;
 };
 

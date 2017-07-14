@@ -11,14 +11,14 @@ int				spinnerSpeed;
 int				spinnerScore;
 Scene*			runningScene;
 
-void	startDebug()
+void	API::startDebug()
 {
 	AllocConsole();
-	HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+	console = GetStdHandle(STD_OUTPUT_HANDLE);
 	debug("Start debugging\n");
 }
 
-void	debug(char* output)
+void	API::debug(char* output)
 {
 #ifdef WIN32
 		DWORD cw;
@@ -33,22 +33,22 @@ void	debug(char* output)
 #endif
 }
 
-int		getWheelSections(void)
+int		API::getWheelSections(void)
 {
 	return wheelSections;
 }
 
-void	setWheelSections(int n)
+void	API::updateWheelSections(int n)
 {
 	wheelSections = n;
 }
 
-void	setSpinnerSpeed(int speed)
+void	API::updateSpinnerSpeed(int speed)
 {
 	spinnerSpeed = speed;
 }
 
-int		getSpinnerScore(void);
+int		API::getSpinnerScore(void)
 {
 	return spinnerScore;
 }

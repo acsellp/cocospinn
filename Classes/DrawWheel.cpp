@@ -13,18 +13,17 @@ bool DrawWheel::init()
 	if (!Layer::init())
 		return false;
 	int i;
-	DrawWheel::sectionNum = getWheelSections();
+	DrawWheel::sectionNum = API::getWheelSections();
+#if (COCOS2D_DEBUG)
 	char buf[300];
 	_snprintf_s(buf, 300, "\n\n Draw  [%d] Sections  \n\n", DrawWheel::sectionNum);
-	debug(buf);
-
+	API::debug(buf);
+#endif
 	
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
 	i = 0;
-	
-
 	float radius = 120.0f;
 	float dec = 360.0f / DrawWheel::sectionNum;
 	float angle = 360.0f;

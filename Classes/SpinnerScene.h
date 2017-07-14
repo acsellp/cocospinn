@@ -18,6 +18,7 @@ public:
     void					TouchEnded(cocos2d::Touch* touch, cocos2d::Event* event);
 	void					TouchCancelled(cocos2d::Touch* touch, cocos2d::Event* event);
 	void					menuCallBack(Ref* ref);
+	void					update(float dt);
 	CREATE_FUNC(Spinner);
 private:
 	cocos2d::Sprite*	sprite;

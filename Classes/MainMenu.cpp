@@ -15,7 +15,6 @@ bool MainMenu::init()
 {
 	if (!Scene::init())
 		return false;
-	debug("MainMenu\n\n");
 	auto visibleSize = Director::getInstance()->getVisibleSize();
 	Vec2 origin = Director::getInstance()->getVisibleOrigin();
 
@@ -37,7 +36,7 @@ bool MainMenu::init()
 
 void MainMenu::spinnerCallBack(Ref* ref)
 {
-	setSpinnerSpeed(1);
+	API::updateSpinnerSpeed(1);
 	auto spinner = Spinner::createScene();
 
 	//Director::getInstance()->replaceScene(spinner);
@@ -46,7 +45,7 @@ void MainMenu::spinnerCallBack(Ref* ref)
 
 void MainMenu::wheelCallBack(Ref* ref)
 {
-	setWheelSections(7);
+	API::updateWheelSections(7);
 	auto wheel = LuckyWheel::createScene();
 
 	//Director::getInstance()->replaceScene(spinner);

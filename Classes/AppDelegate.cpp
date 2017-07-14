@@ -87,10 +87,7 @@ bool AppDelegate::applicationDidFinishLaunching() {
         director->setContentScaleFactor(MIN(smallResolutionSize.height/designResolutionSize.height, smallResolutionSize.width/designResolutionSize.width));
 
     register_all_packages();
-	debug("AppDelegate\n\n");
-
 	auto scene = MainMenu::createScene();
-    
     director->runWithScene(scene);
     return true;
 }
