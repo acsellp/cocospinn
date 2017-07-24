@@ -1,5 +1,4 @@
-#ifndef __MAIN_MENU_H__
-#define __MAIN_MENU_H__
+#pragma once
 
 #include "cocos2d.h"
 class MainMenu : public cocos2d::Scene
@@ -9,7 +8,8 @@ public:
 	virtual bool			init();
 	void					spinnerCallBack(cocos2d::Ref* ref);
 	void					wheelCallBack(cocos2d::Ref* ref);
+	void					wheelOfFOrutneCallBack(cocos2d::Ref* ref);
+	void					sbCallBack(cocos2d::Ref* ref);
 	virtual void			update(float dt);
 	CREATE_FUNC(MainMenu);
 };
-#endif

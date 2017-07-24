@@ -1,11 +1,6 @@
 #pragma once
-#ifndef __SPINNER_SCENE_H__
-#define __SPINNER_SCENE_H__
 
 #include "cocos2d.h"
-#define COCOS_DEBUG 1
-#define MAX_SPEED 100
-#define MIN_SPEED 5
 
 class Spinner : public cocos2d::Scene
 {
@@ -21,18 +16,15 @@ public:
 	void					update(float dt);
 	CREATE_FUNC(Spinner);
 private:
-	cocos2d::Sprite*	sprite;
-	cocos2d::Point		first;
-	cocos2d::Point		last;
-	cocos2d::Sequence	*sequ;
-	float				centerx;
-	float				centery;
-	float				speed;
-	float				aRot;
-	float				nRot;
-	bool				forward;
-	uint32_t			score;
-	uint32_t			serverData;
+	cocos2d::Point			first;
+	cocos2d::Point			last;
+	std::vector<uint16_t>	touch_stack;
+	float					centerx;
+	float					centery;
+	uint16_t				speed;
+	float					aRot;
+	float					nRot;
+	bool					forward;
+	uint32_t				score;
+	uint32_t				serverData;
 };
-
-#endif

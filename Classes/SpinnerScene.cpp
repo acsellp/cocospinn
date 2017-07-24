@@ -17,8 +17,8 @@ bool Spinner::init()
 	score = 0;
 	speed = 0;
 	serverData = 0;
-    auto visibleSize = Director::getInstance()->getVisibleSize();
-    Vec2 origin = Director::getInstance()->getVisibleOrigin();
+    Size visibleSize = Director::getInstance()->getVisibleSize();
+    Vec2 visibleOrigin = Director::getInstance()->getVisibleOrigin();
 	centery = visibleSize.height / 2;
 	centerx = visibleSize.width / 2;
 	Menu* menu = Menu::create();
@@ -28,26 +28,24 @@ bool Spinner::init()
 	menu->addChild(back);
 	this->addChild(menu);
 
-	auto bg = Sprite::create("Background.jpg");
-	bg->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
+	Sprite* bg = Sprite::create("Background.jpg");
+	bg->setPosition(Vec2(visibleSize.width / 2 + visibleOrigin.x, visibleSize.height / 2 + visibleOrigin.y));
 	this->addChild(bg, -1);
 
-    sprite = Sprite::create("Spinner.png");
-    sprite->setPosition(Vec2(visibleSize.width / 2 + origin.x, visibleSize.height / 2 + origin.y));
-	
-	//sprite->setScale(0.1f);
-	//auto scaleTo = ScaleTo::create(0.5f, 1.0f, 1.0f);
-	//sprite->runAction(scaleTo);
+    Sprite* sprite = Sprite::create("Spinner.png");
+	sprite->setTag(SPINNER_TAG);
+	sprite->setAnchorPoint(Vec2(0.5, 0.441));
+    sprite->setPosition(Vec2(visibleSize.width / 2 + visibleOrigin.x, visibleSize.height / 2 + visibleOrigin.y));
 	this->addChild(sprite, 0);
-
+	
 	auto touchListener = EventListenerTouchOneByOne::create();
     touchListener->onTouchBegan = CC_CALLBACK_2(Spinner::TouchBegan, this);	
     touchListener->onTouchMoved = CC_CALLBACK_2(Spinner::TouchMoved, this);
     touchListener->onTouchEnded = CC_CALLBACK_2(Spinner::TouchEnded, this);
 	touchListener->onTouchCancelled = CC_CALLBACK_2(Spinner::TouchCancelled, this);
 	Director::getInstance()->getEventDispatcher()->addEventListenerWithSceneGraphPriority(touchListener, sprite);
-	auto rotateBy = RotateBy::create(0.4f, 720.0f);
-	sprite->runAction(rotateBy);
+
+
     return true;
 }
 
@@ -76,32 +74,46 @@ void Spinner::TouchEnded (Touch* touch, Event* event)
 		nRot = MIN_SPEED / speed;
 		aRot = 360.0f * speed / MIN_SPEED;
 
-		auto rotateBy = RotateBy::create(nRot/2, aRot/2);
-		//rotateBy->setDuration(3.0f);
-		//rotateBy->ActionInterval::initWithDuration(3.0f);
+		if (this->getChildByTag(SPINNER_TAG) != nullptr && this->getChildByTag(SPINNER_TAG)->getActionByTag(SPINNER_SEQ_TAG) == nullptr)
+		{
+			auto rotateBy = RotateBy::create(nRot / 2, aRot / 2);
 
-		EaseIn  *actionIn = EaseIn::create(rotateBy, 1.0f);
-		//actionIn->ActionInterval::initWithDuration(1.0f);
-		//sprite->runAction(actionIn);
+			auto copy = rotateBy->clone();
+			copy->setDuration(20 / speed);
 
-		EaseOut *actionOut = EaseOut::create(rotateBy, 1.0f);
-		//actionOut->ActionInterval::initWithDuration(1.0f);
+			EaseIn  *actionIn = EaseIn::create(rotateBy, 4.0f);
+			actionIn->ActionInterval::initWithDuration(0.5f);
 
+			EaseOut *actionOut = EaseOut::create(rotateBy, 1.0f);
+			actionOut->ActionInterval::initWithDuration(3.0f);
+
+			Vector<FiniteTimeAction *> actionVector;
+			actionVector.insert(0, actionIn);
+			uint16_t i = 1;
+			while (i < speed)
+			{
+				actionVector.insert(i, copy);
+				i++;
+			}
+
+			actionVector.insert(i, actionOut);
+			Sequence* sequ = Sequence::create(actionVector);
+			sequ->setTag(SPINNER_SEQ_TAG);
+			this->getChildByTag(SPINNER_TAG)->runAction(sequ);
+			score += aRot;
+		}
+		else
+		{
+			//push to stack ..
+		}
 		
-		Vector<FiniteTimeAction *> actionVector;
-		actionVector.insert(0, actionIn);
-		actionVector.insert(1, actionOut);
-		sequ = Sequence::create(actionVector);
-		//sequ->ActionInterval::initWithDuration(5.0f);
-		score += aRot;
-
-		sprite->runAction(sequ);
 #if (COCOS2D_DEBUG)
 		char buf[300];
-		_snprintf_s(buf, 300, "\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %f\nScore: %ld\nServer value %ld\naRot,nRot  %lf,%lf\n\n", \
+		_snprintf_s(buf, 300, "\n   Right bottom\nFirst: %f,%f\nLast: %f,%f\nOrigin: %f,%f\nSpeed: %d\nScore: %ld\nServer value %ld\naRot,nRot  %lf,%lf\n\n", \
 			first.x, first.y, last.x, last.y, centerx, centery, speed, score, serverData, aRot, nRot);
 		API::debug(buf);
 #endif
+
 	}
 }
 

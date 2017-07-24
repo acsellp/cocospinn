@@ -5,17 +5,29 @@
 
 USING_NS_CC;
 
-static HANDLE	console;
+
+HANDLE			console;
 int				wheelSections;
 int				spinnerSpeed;
 int				spinnerScore;
 Scene*			runningScene;
+Node*			currentNode;
+
+
+void	API::init()
+{
+	currentNode = nullptr;
+	console = NULL;
+	wheelSections = 7;
+	spinnerSpeed = 1;
+	spinnerScore = 0;
+	runningScene = nullptr;
+}
 
 void	API::startDebug()
 {
 	AllocConsole();
 	console = GetStdHandle(STD_OUTPUT_HANDLE);
-	debug("Start debugging\n");
 }
 
 void	API::debug(char* output)
@@ -35,6 +47,7 @@ void	API::debug(char* output)
 
 int		API::getWheelSections(void)
 {
+	// ..
 	return wheelSections;
 }
 
@@ -45,10 +58,12 @@ void	API::updateWheelSections(int n)
 
 void	API::updateSpinnerSpeed(int speed)
 {
+	//if scene != done ->return
 	spinnerSpeed = speed;
 }
 
 int		API::getSpinnerScore(void)
 {
+	// .. 
 	return spinnerScore;
 }
